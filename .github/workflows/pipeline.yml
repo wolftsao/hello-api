@@ -63,4 +63,50 @@ jobs:
         with:
           name: api
           path: artifacts
-          
+  deliver:
+    name: Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download binary
+        uses: actions/download-artifact@v3
+        with:
+          name: api
+      
+      # - name: Create Release
+      #   id: create_release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name: ${{ github.ref }}
+      #     release_name: Release ${{ github.ref }}
+      #     body: |
+      #       Still in experimentation phase
+      #     draft: true
+      #     prerelease: true
+
+      # - name: Upload Release Binary
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: api
+      #     asset_name: api
+      #     asset_content_type: application/octet-stream
+
+      - name: Create Release with Binary
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          name: Release ${{ github.ref }}
+          body: Still in experimentation phase
+          draft: true
+          prerelease: true
+          files: api
+
+  
