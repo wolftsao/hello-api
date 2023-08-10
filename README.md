@@ -2,7 +2,7 @@
 
 ## Dependencies
 
-- Go version 1.20
+- Go version 1.21.0
 
 ## Setup
 
