@@ -1,3 +1,4 @@
+// Package rest houses all rest handlers
 package rest
 
 import (
