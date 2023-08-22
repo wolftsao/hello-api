@@ -9,6 +9,7 @@ import (
 
 	"github.com/wolftsao/hello-api/handlers"
 	"github.com/wolftsao/hello-api/handlers/rest"
+	"github.com/wolftsao/hello-api/translation"
 )
 
 func main() {
@@ -19,7 +20,10 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.Handle("/translate/hello", http.StripPrefix("/translate", http.HandlerFunc(rest.TranslateHandler)))
+	translationService := translation.NewStaticService()
+	translateHandler := rest.NewTranslateHandler(translationService)
+
+	mux.Handle("/translate/hello", http.StripPrefix("/translate", http.HandlerFunc(translateHandler.TranslateHandler)))
 	mux.HandleFunc("/health", handlers.HealthCheck)
 
 	server := &http.Server{

@@ -5,8 +5,10 @@ import (
 	"net/http"
 
 	"github.com/wolftsao/hello-api/handlers/rest"
+	"github.com/wolftsao/hello-api/translation"
 )
 
 func Translate(w http.ResponseWriter, r *http.Request) {
-	rest.TranslateHandler(w, r)
+	rest.NewTranslateHandler(translation.NewStaticService()).TranslateHandler(w, r)
+	// rest.TranslateHandler(w, r)
 }
