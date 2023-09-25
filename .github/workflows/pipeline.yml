@@ -196,7 +196,7 @@ jobs:
         run: docker image tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
       
       - name: Push Docker image to GHCR
-        run: docker push ${{ env.REGISTRY }}${{ env.IMAGE_NAME }}:latest
+        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
   # deploy-function:
   #   name: Deploy FaaS
