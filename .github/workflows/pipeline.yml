@@ -157,13 +157,16 @@ jobs:
   containerize-buildpack:
     name: Build Container buildpack
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     needs: test
     steps:
       - name: Check out code into the go module directory
         uses: actions/checkout@v3
         
       - name: Install Pack
-        run: (curl -sSl "https://github.com/buildpacks/pack/releases/download/v0.30.0/pack-v0.30.0-linux.tgz" | sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack)
+        run: (curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.30.0/pack-v0.30.0-linux.tgz" | sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack)
         
       - name: Build
         run: pack build gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:latest --builder gcr.io/buildpacks/builder:v1
@@ -196,7 +199,7 @@ jobs:
         run: docker image tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:latest ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
       
       - name: Push Docker image to GHCR
-        run: docker push ${{ env.REGISTRY }}${{ env.IMAGE_NAME }}:latest
+        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
   # deploy-function:
   #   name: Deploy FaaS
