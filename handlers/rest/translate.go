@@ -43,6 +43,7 @@ func (t *TranslateHandler) TranslateHandler(w http.ResponseWriter, r *http.Reque
 		language = defaultLanguage
 	}
 
+	language = strings.ToLower(language)
 	// workaround for URL
 	word := strings.ReplaceAll(r.URL.Path, "/", "")
 	translation := t.service.Translate(word, language)

@@ -7,8 +7,17 @@ import (
 	"testing"
 
 	"github.com/wolftsao/hello-api/handlers/rest"
-	"github.com/wolftsao/hello-api/translation"
 )
+
+type stubbedService struct{}
+
+func (s *stubbedService) Translate(word string, language string) string {
+	if word == "foo" {
+		return "bar"
+	}
+
+	return ""
+}
 
 func TestTranslateAPI(t *testing.T) {
 	tt := []struct {
@@ -18,27 +27,33 @@ func TestTranslateAPI(t *testing.T) {
 		ExpectedTranslation string
 	}{
 		{
-			Endpoint:            "/hello",
+			Endpoint:            "/foo",
 			StatusCode:          http.StatusOK,
 			ExpectedLanguage:    "english",
-			ExpectedTranslation: "hello",
+			ExpectedTranslation: "bar",
 		},
 		{
-			Endpoint:            "/hello?language=german",
+			Endpoint:            "/foo?language=german",
 			StatusCode:          http.StatusOK,
 			ExpectedLanguage:    "german",
-			ExpectedTranslation: "hallo",
+			ExpectedTranslation: "bar",
 		},
 		{
-			Endpoint:            "/hello?language=dutch",
+			Endpoint:            "/baz",
 			StatusCode:          http.StatusNotFound,
 			ExpectedLanguage:    "",
 			ExpectedTranslation: "",
 		},
+		{
+			Endpoint:            "/foo?language=GerMan",
+			StatusCode:          http.StatusOK,
+			ExpectedLanguage:    "german",
+			ExpectedTranslation: "bar",
+		},
 	}
 
-	underTest := rest.NewTranslateHandler(translation.NewStaticService())
-	handler := http.HandlerFunc(underTest.TranslateHandler)
+	h := rest.NewTranslateHandler(&stubbedService{})
+	handler := http.HandlerFunc(h.TranslateHandler)
 
 	for _, test := range tt {
 		rr := httptest.NewRecorder()
