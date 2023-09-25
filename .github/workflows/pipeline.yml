@@ -157,6 +157,9 @@ jobs:
   containerize-buildpack:
     name: Build Container buildpack
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     needs: test
     steps:
       - name: Check out code into the go module directory
