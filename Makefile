@@ -2,7 +2,7 @@ GO_VERSION := 1.21.0
 
 .PHONY: install-go init-go
 
-setup: install-go init-go install-lint
+setup: install-go init-go install-lint copy-hooks
 
 # TODO add MacOS support
 install-go:
@@ -18,6 +18,10 @@ install-lint:
 	sudo curl -sSfL \
 	https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
 	| sh -s -- -b $$(go env GOPATH)/bin v1.54.1
+
+copy-hooks:
+	chmod +x scripts/hooks/*
+	cp -r scripts/hooks .git/.
 
 static-check:
 	golangci-lint run
