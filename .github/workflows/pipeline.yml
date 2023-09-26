@@ -201,6 +201,28 @@ jobs:
       - name: Push Docker image to GHCR
         run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
+  deploy-container:
+    name: Deploy Container buildpack
+    runs-on: ubuntu-latest
+    needs: containerize-buildpack
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    steps:
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: Deploy to CaaS
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@main
+        with:
+          service: translate
+          image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/hello-api:latest
+
+      - id: test
+        run: curl "${{ steps.deploy.outputs.url }}/hello"
+
   # deploy-function:
   #   name: Deploy FaaS
   #   runs-on: ubuntu-latest
