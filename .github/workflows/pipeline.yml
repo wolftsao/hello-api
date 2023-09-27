@@ -154,6 +154,33 @@ jobs:
           prerelease: true
           files: api
 
+  containerize:
+    name: Build Containers
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Check out code into the go module directory
+        uses: actions/checkout@v3
+
+      - name: Build Min
+        run: docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:min .
+
+      - name: Build Dev
+        run: docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev --target dev .
+
+      - name: Log in to the GHCR
+        uses: docker/login-action@master
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push Docker min image to GHCR
+        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:min
+
+      - name: Push Docker dev image to GHCR
+        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
+
   containerize-buildpack:
     name: Build Container buildpack
     runs-on: ubuntu-latest
