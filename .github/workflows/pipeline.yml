@@ -157,6 +157,9 @@ jobs:
   containerize:
     name: Build Containers
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     needs: test
     steps:
       - name: Check out code into the go module directory
