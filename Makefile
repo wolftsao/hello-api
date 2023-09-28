@@ -1,4 +1,8 @@
 GO_VERSION := 1.21.0
+TAG := $(shell git describe --abbrev=0 --tags --always)
+HASH := $(shell git rev-parse HEAD)
+DATE := $(shell date +%Y-%m-%d.%H:%M:%S)
+LDFLAGS := -w -X github.com/wolftsao/hello-api/handlers.hash=$(HASH) -X github.com/wolftsao/hello-api/handlers.tag=$(TAG) -X github.com/wolftsao/hello-api/handlers.date=$(DATE)
 
 .PHONY: install-go init-go
 
@@ -27,7 +31,7 @@ static-check:
 	golangci-lint run
 
 build:
-	go build -o api cmd/main.go
+	go build -ldflags "$(LDFLAGS)" -o api cmd/main.go
 	
 test:
 	go test ./... -coverprofile=coverage.out
