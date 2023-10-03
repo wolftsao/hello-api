@@ -230,6 +230,7 @@ jobs:
       packages: write
     # needs: smoke-test
     needs: test
+    if: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}
     steps:
       - name: Check out code into the go module directory
         uses: actions/checkout@v3
