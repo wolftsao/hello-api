@@ -80,10 +80,55 @@ jobs:
         with:
           name: reports
           path: reports
+
+  # smoke-test:
+  #   name: Smoke Test Application
+  #   needs:
+  #     - test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Set up Go 1.x
+  #       uses: actions/setup-go@v4
+  #       with:
+  #         go-version: ^1.21
+
+  #     - name: Check out code into the Go module directory
+  #       uses: actions/checkout@v3
+
+  #     - name: Install Godog
+  #       run: go install github.com/cucumber/godog/cmd/godog@latest
+
+  #     - name: Run Smoke Tests
+  #       run: |
+  #         go get ./...
+  #         godog run --tags=smoke-test
+
+  # regression-test:
+  #   name: Regression Test Application
+  #   needs:
+  #     - test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Set up Go 1.x
+  #       uses: actions/setup-go@v4
+  #       with:
+  #         go-version: ^1.21
+
+  #     - name: Check out code into the Go module directory
+  #       uses: actions/checkout@v3
+
+  #     - name: Install Godog
+  #       run: go install github.com/cucumber/godog/cmd/godog@latest
+
+  #     - name: Run Regression Tests
+  #       run: |
+  #         go get ./...
+  #         godog run --tags=regression-test
   
   build:
     name: Build App
     runs-on: ubuntu-latest
+    # needs: smoke-test
     needs: test
     steps:
       - name: Set up Go 1.x
@@ -183,6 +228,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+    # needs: smoke-test
     needs: test
     steps:
       - name: Check out code into the go module directory

@@ -15,6 +15,21 @@ func main() {
 	cfg := config.LoadConfiguration()
 	addr := cfg.Port
 
+	mux := API(cfg)
+
+	log.Printf("listening on %s\n", addr)
+
+	srv := http.Server{
+		ReadTimeout: time.Second * 10,
+		Handler:     mux,
+		Addr:        addr,
+	}
+
+	// log.Fatal(http.ListenAndServe(addr, mux))
+	log.Fatal(srv.ListenAndServe())
+}
+
+func API(cfg config.Configuration) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	var translationService rest.Translator
@@ -24,19 +39,17 @@ func main() {
 		client := translation.NewHelloClient(cfg.LegacyEndpoint)
 		translationService = translation.NewRemoteService(client)
 	}
+
+	if cfg.DatabaseURL != "" {
+		db := translation.NewDatabaseService(cfg)
+		translationService = db
+	}
+
 	translateHandler := rest.NewTranslateHandler(translationService)
 
 	mux.Handle("/translate/hello", http.StripPrefix("/translate", http.HandlerFunc(translateHandler.TranslateHandler)))
 	mux.HandleFunc("/health", handlers.HealthCheck)
 	mux.HandleFunc("/info", handlers.Info)
 
-	server := &http.Server{
-		Addr:              addr,
-		ReadHeaderTimeout: 3 * time.Second,
-		Handler:           mux,
-	}
-
-	log.Printf("listening on %s\n", addr)
-
-	log.Fatal(server.ListenAndServe())
+	return mux
 }
